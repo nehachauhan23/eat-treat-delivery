@@ -3,11 +3,13 @@ import cors from "cors";
 
 import menuRoutes from "./routes/menu.routes.js";
 import orderRoutes from "./routes/order.routes.js";
+import { errorHandler } from "./middleware/error.middleware.js";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(errorHandler);
 
 app.use("/api/menu", menuRoutes);
 
