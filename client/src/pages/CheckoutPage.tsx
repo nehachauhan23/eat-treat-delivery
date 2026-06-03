@@ -14,9 +14,11 @@ export default function CheckoutPage() {
   const [phone, setPhone] = useState("");
 
   const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
+    e: React.SubmitEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
+    console.log("You tried to place an order");
+    
 
     const order = await createOrder({
       customer: {

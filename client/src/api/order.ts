@@ -11,8 +11,11 @@ export const createOrder = async (payload: {
     quantity: number;
   }[];
 }) => {
+  console.log("data : ", payload);
+  
   const { data } = await api.post("/orders", payload);
-
+  console.log(" data : ", data );
+  
   return data;
 };
 
