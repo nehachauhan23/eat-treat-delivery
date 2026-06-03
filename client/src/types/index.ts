@@ -4,6 +4,7 @@ export interface MenuItem {
   description: string;
   price: number;
   image: string;
+  category: string;
 }
 
 export interface CartItem extends MenuItem {
@@ -15,7 +16,6 @@ export type OrderStatus =
   | "PREPARING"
   | "OUT_FOR_DELIVERY"
   | "DELIVERED";
-
 
 export interface Order {
   id: string;
