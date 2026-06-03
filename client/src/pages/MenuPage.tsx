@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
-
 import { getMenu } from "../api/menu";
 import MenuCard from "../components/MenuCard";
 import type { MenuItem } from "../types";
+import { useCartStore } from "../store/cartStore";
 
 export default function MenuPage() {
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const addItem = useCartStore((state) => state.addItem);
   useEffect(() => {
     const fetchMenu = async () => {
       const data = await getMenu();
-        console.log("data : ", data );
-        
+      console.log("data : ", data);
+
       setMenu(data);
       setLoading(false);
     };
@@ -25,15 +25,11 @@ export default function MenuPage() {
   }
 
   return (
-    <div>
+    <div className="mx-auto max-w-5xl px-4">
       <h1>Food Delivery</h1>
 
       {menu.map((item) => (
-        <MenuCard
-          key={item.id}
-          item={item}
-          onAdd={() => {}}
-        />
+        <MenuCard key={item.id} item={item} onAdd={() => addItem(item)} />
       ))}
     </div>
   );

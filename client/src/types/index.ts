@@ -15,3 +15,23 @@ export type OrderStatus =
   | "PREPARING"
   | "OUT_FOR_DELIVERY"
   | "DELIVERED";
+
+
+export interface Order {
+  id: string;
+  customer: Customer;
+  items: OrderItem[];
+  status: OrderStatus;
+  createdAt: Date;
+}
+
+export interface Customer {
+  name: string;
+  address: string;
+  phone: string;
+}
+
+export interface OrderItem {
+  menuItemId: string;
+  quantity: number;
+}
