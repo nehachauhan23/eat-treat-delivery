@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-
 import { getOrder } from "../api/order";
 import type { Order } from "../types";
+import { socket } from "../socket";
 
 const STATUSES: Order["status"][] = [
   "ORDER_RECEIVED",
@@ -37,9 +37,7 @@ const STATUS_META = {
 export default function OrderTrackingPage() {
   const { id } = useParams();
 
-  const [order, setOrder] =
-    useState<Order | null>(null);
-
+  const [order, setOrder] = useState<Order | null>(null);
   useEffect(() => {
     const fetchOrder = async () => {
       if (!id) return;
@@ -51,33 +49,59 @@ export default function OrderTrackingPage() {
 
     fetchOrder();
 
-    const interval = setInterval(
-      fetchOrder,
-      5000
-    );
+    if (!id) return;
 
-    return () => clearInterval(interval);
+    socket.emit("joinOrder", id);
+
+    const handleStatusUpdate = ({ status }: { status: Order["status"] }) => {
+      setOrder((prev) =>
+        prev
+          ? {
+              ...prev,
+              status,
+            }
+          : prev,
+      );
+    };
+
+    socket.on("statusUpdated", handleStatusUpdate);
+
+    return () => {
+      socket.off("statusUpdated", handleStatusUpdate);
+    };
   }, [id]);
+  // useEffect(() => {
+  //   const fetchOrder = async () => {
+  //     if (!id) return;
+
+  //     const data = await getOrder(id);
+
+  //     setOrder(data);
+  //   };
+
+  //   fetchOrder();
+
+  //   const interval = setInterval(
+  //     fetchOrder,
+  //     5000
+  //   );
+
+  //   return () => clearInterval(interval);
+  // }, [id]);
 
   if (!order) {
     return (
       <div className="min-h-screen bg-stone-50 flex items-center justify-center">
-        <h1 className="text-lg font-semibold">
-          Loading order...
-        </h1>
+        <h1 className="text-lg font-semibold">Loading order...</h1>
       </div>
     );
   }
 
-  const currentIdx = STATUSES.indexOf(
-    order.status
-  );
+  const currentIdx = STATUSES.indexOf(order.status);
 
-  const currentMeta =
-    STATUS_META[order.status];
+  const currentMeta = STATUS_META[order.status];
 
-  const isDelivered =
-    order.status === "DELIVERED";
+  const isDelivered = order.status === "DELIVERED";
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -95,9 +119,7 @@ export default function OrderTrackingPage() {
 
       <div className="max-w-2xl mx-auto px-4 pb-10">
         <div className="mt-6 bg-white rounded-2xl border border-stone-100 p-6 text-center">
-          <div className="text-5xl mb-3">
-            {currentMeta.emoji}
-          </div>
+          <div className="text-5xl mb-3">{currentMeta.emoji}</div>
 
           <h2 className="text-xl font-semibold text-stone-900">
             {currentMeta.label}
@@ -119,20 +141,14 @@ export default function OrderTrackingPage() {
             {STATUSES.map((status, idx) => {
               const meta = STATUS_META[status];
 
-              const done =
-                idx <= currentIdx;
+              const done = idx <= currentIdx;
 
-              const active =
-                idx === currentIdx;
+              const active = idx === currentIdx;
 
-              const isLast =
-                idx === STATUSES.length - 1;
+              const isLast = idx === STATUSES.length - 1;
 
               return (
-                <div
-                  key={status}
-                  className="flex gap-4"
-                >
+                <div key={status} className="flex gap-4">
                   <div className="flex flex-col items-center">
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-500 ${
@@ -145,9 +161,7 @@ export default function OrderTrackingPage() {
                     >
                       {done ? (
                         active ? (
-                          <span className="text-sm">
-                            {meta.emoji}
-                          </span>
+                          <span className="text-sm">{meta.emoji}</span>
                         ) : (
                           <svg
                             className="w-4 h-4 text-white"
@@ -171,24 +185,16 @@ export default function OrderTrackingPage() {
                     {!isLast && (
                       <div
                         className={`w-0.5 h-8 my-0.5 ${
-                          idx < currentIdx
-                            ? "bg-stone-900"
-                            : "bg-stone-100"
+                          idx < currentIdx ? "bg-stone-900" : "bg-stone-100"
                         }`}
                       />
                     )}
                   </div>
 
-                  <div
-                    className={`pt-1 ${
-                      isLast ? "" : "pb-4"
-                    }`}
-                  >
+                  <div className={`pt-1 ${isLast ? "" : "pb-4"}`}>
                     <p
                       className={`text-sm font-semibold ${
-                        done
-                          ? "text-stone-900"
-                          : "text-stone-400"
+                        done ? "text-stone-900" : "text-stone-400"
                       }`}
                     >
                       {meta.label}
@@ -224,9 +230,7 @@ export default function OrderTrackingPage() {
               : "border border-stone-200 text-stone-700 hover:bg-white"
           }`}
         >
-          {isDelivered
-            ? "Order Again 🍔"
-            : "Back To Menu"}
+          {isDelivered ? "Order Again 🍔" : "Back To Menu"}
         </Link>
       </div>
     </div>

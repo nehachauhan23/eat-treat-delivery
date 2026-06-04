@@ -3,6 +3,7 @@ import { v4 as uuid } from "uuid";
 import { orders } from "../data/orders.js";
 import { Order } from "../types/index.js";
 import { CreateOrderDto } from "../validators/order.validators.js";
+import { io } from "../socket.js";
 
 export class OrderService {
   createOrder(payload: CreateOrderDto): Order {
@@ -31,6 +32,9 @@ export class OrderService {
     if (!order) return null;
 
     order.status = status;
+    io.to(id).emit("statusUpdated", {
+      status,
+    });
 
     return order;
   }
