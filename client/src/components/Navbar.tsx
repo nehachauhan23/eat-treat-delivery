@@ -7,7 +7,7 @@ type Props = {
 };
 
 export default function Navbar({
-  brandName = "biteclub",
+  brandName = "Eat & Treat",
   subtitle = "delivery",
 }: Props) {
   const items = useCartStore((state) => state.items);

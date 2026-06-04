@@ -9,32 +9,21 @@ export default function MenuPage() {
   const [loading, setLoading] = useState(true);
 
   const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState("All");
 
   const addItem = useCartStore((state) => state.addItem);
 
   const cart = useCartStore((state) => state.items);
 
-  // const cartCount = cart.reduce((s, i) => s + i.quantity, 0);
-
-  // const cartTotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
-
   const getQty = (id: string) => cart.find((i) => i.id === id)?.quantity ?? 0;
 
-  const categories = [
-    "All",
-    ...new Set(menu.map((item) => item.category).filter(Boolean)),
-  ];
+  const categories = ["All"];
 
   const filteredMenu = menu.filter((item) => {
-    const matchesCategory =
-      activeCategory === "All" || item.category === activeCategory;
-
     const matchesSearch = item.name
       .toLowerCase()
       .includes(search.toLowerCase());
 
-    return matchesCategory && matchesSearch;
+    return matchesSearch;
   });
 
   useEffect(() => {
@@ -56,7 +45,6 @@ export default function MenuPage() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-
       <div className="max-w-2xl mx-auto px-4 pb-10">
         <div className="py-8">
           <h1 className="text-3xl font-semibold text-stone-900 tracking-tight">
@@ -84,12 +72,7 @@ export default function MenuPage() {
           {categories.map((category) => (
             <button
               key={category}
-              onClick={() => setActiveCategory(category)}
-              className={`px-4 py-1.5 rounded-full text-sm ${
-                activeCategory === category
-                  ? "bg-stone-900 text-white"
-                  : "bg-white border border-stone-200"
-              }`}
+              className={`px-4 py-1.5 rounded-full text-sm ${"bg-stone-900 text-white"}`}
             >
               {category}
             </button>
