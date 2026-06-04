@@ -6,7 +6,9 @@
     "strict": true,
     "rootDir": "./src",
     "outDir": "dist",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+        "typeRoots": ["./node_modules/@types"]
+
   },
   "include": ["src"],
    "exclude": [
