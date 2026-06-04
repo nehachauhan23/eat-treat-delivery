@@ -11,7 +11,7 @@ router.post("/", (req, res) => {
   if (!parsed.success) {
     return res.status(400).json({
       message: "Invalid request",
-      errors: parsed.error.flatten(),
+      errors: parsed.error.issues,
     });
   }
 
