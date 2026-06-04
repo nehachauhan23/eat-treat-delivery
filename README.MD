@@ -13,7 +13,7 @@ The application allows users to browse a menu, manage a cart, place orders, and 
 Add deployed frontend URL here.
 
 ```txt
-https://your-frontend-url.vercel.app
+https://eat-treat-delivery.vercel.app/
 ```
 
 ### Backend
@@ -21,7 +21,7 @@ https://your-frontend-url.vercel.app
 Add deployed backend URL here.
 
 ```txt
-https://your-backend-url.onrender.com
+https://eat-treat-delivery.onrender.com
 ```
 
 ---
@@ -397,66 +397,6 @@ Tests cover:
 
 ---
 
-# AI Usage
-
-AI was used as a development assistant throughout the project.
-
-Examples include:
-
-* Boilerplate generation
-* TypeScript assistance
-* UI iteration and refinement
-* Test case brainstorming
-* Debugging support
-* Architecture review
-
-AI was not responsible for architectural decisions, system design, state management choices, validation strategy, or tradeoff analysis. Those decisions were made manually during implementation.
-
----
-
-# Challenges & Solutions
-
-## Challenge: Keeping UI and Business Logic Separate
-
-Solution:
-
-* Zustand for client state
-* Service layer for backend logic
-
----
-
-## Challenge: Order Tracking Updates
-
-Solution:
-
-* Backend-driven status progression
-* Frontend polling for updates
-
-Future improvement:
-
-* Socket.IO for push-based real-time communication
-
----
-
-## Challenge: Input Validation
-
-Solution:
-
-* Zod schemas
-* Server-side validation before business logic execution
-
----
-
-# Setup Instructions
-
-## Clone Repository
-
-```bash
-git clone <repository-url>
-cd food-delivery
-```
-
----
 
 ## Frontend
 
