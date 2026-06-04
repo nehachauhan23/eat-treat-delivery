@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { createOrder } from "../api/order";
 import { useCartStore } from "../store/cartStore";
+import axios from "axios";
 
 const DELIVERY_FEE = 2.99;
 
@@ -17,45 +18,63 @@ export default function CheckoutPage() {
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
 
   const total = subtotal + DELIVERY_FEE;
 
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (name.trim().length < 2) {
+      alert("Name must be at least 2 characters");
+      return;
+    }
 
-    const order = await createOrder({
-      customer: {
-        name,
-        address,
-        phone,
-      },
-      items: items.map((item) => ({
-        menuItemId: item.id,
-        quantity: item.quantity,
-      })),
-    });
+    if (address.trim().length < 5) {
+      alert("Please enter a valid address");
+      return;
+    }
 
-    clearCart();
+    if (!/^\d{10}$/.test(phone)) {
+      alert("Phone number must be 10 digits");
+      return;
+    }
+    try {
+      const order = await createOrder({
+        customer: {
+          name,
+          address,
+          phone,
+        },
+        items: items.map((item) => ({
+          menuItemId: item.id,
+          quantity: item.quantity,
+        })),
+      });
 
-    navigate(`/orders/${order.id}`);
+      clearCart();
+
+      navigate(`/orders/${order.id}`);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errors = error.response?.data?.errors;
+
+        if (errors && Array.isArray(errors)) {
+          alert(errors.map((err) => err.message).join("\n"));
+        } else {
+          alert(error.response?.data?.message ?? "Failed to place order");
+        }
+      }
+    }
   };
 
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-stone-50">
         <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-          <h1 className="text-2xl font-semibold">
-            Your cart is empty
-          </h1>
+          <h1 className="text-2xl font-semibold">Your cart is empty</h1>
 
-          <Link
-            to="/"
-            className="inline-block mt-4 text-stone-900 underline"
-          >
+          <Link to="/" className="inline-block mt-4 text-stone-900 underline">
             Browse Menu
           </Link>
         </div>
@@ -64,10 +83,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="min-h-screen bg-stone-50"
-    >
+    <form onSubmit={handleSubmit} className="min-h-screen bg-stone-50">
       <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-stone-100">
         <div className="max-w-2xl mx-auto px-4 h-16 flex items-center gap-3">
           <Link
@@ -89,9 +105,7 @@ export default function CheckoutPage() {
             </svg>
           </Link>
 
-          <h1 className="text-base font-semibold text-stone-900">
-            Checkout
-          </h1>
+          <h1 className="text-base font-semibold text-stone-900">Checkout</h1>
         </div>
       </header>
 
@@ -133,9 +147,7 @@ export default function CheckoutPage() {
 
               <input
                 value={name}
-                onChange={(e) =>
-                  setName(e.target.value)
-                }
+                onChange={(e) => setName(e.target.value)}
                 placeholder="John Doe"
                 className="w-full px-4 py-3 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-stone-900/10"
                 required
@@ -149,9 +161,7 @@ export default function CheckoutPage() {
 
               <input
                 value={address}
-                onChange={(e) =>
-                  setAddress(e.target.value)
-                }
+                onChange={(e) => setAddress(e.target.value)}
                 placeholder="123 Main St"
                 className="w-full px-4 py-3 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-stone-900/10"
                 required
@@ -165,9 +175,7 @@ export default function CheckoutPage() {
 
               <input
                 value={phone}
-                onChange={(e) =>
-                  setPhone(e.target.value)
-                }
+                onChange={(e) => setPhone(e.target.value)}
                 placeholder="+91 9876543210"
                 className="w-full px-4 py-3 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-stone-900/10"
                 required
@@ -183,23 +191,14 @@ export default function CheckoutPage() {
 
           <div className="flex flex-col gap-2.5">
             {items.map((item) => (
-              <div
-                key={item.id}
-                className="flex justify-between text-sm"
-              >
+              <div key={item.id} className="flex justify-between text-sm">
                 <span className="text-stone-600">
                   {item.name}
-                  <span className="text-stone-400">
-                    {" "}
-                    ×{item.quantity}
-                  </span>
+                  <span className="text-stone-400"> ×{item.quantity}</span>
                 </span>
 
                 <span className="font-medium text-stone-900">
-                  $
-                  {(
-                    item.price * item.quantity
-                  ).toFixed(2)}
+                  ${(item.price * item.quantity).toFixed(2)}
                 </span>
               </div>
             ))}
@@ -207,9 +206,7 @@ export default function CheckoutPage() {
             <div className="border-t border-stone-100 pt-2.5 mt-1 flex flex-col gap-2">
               <div className="flex justify-between text-sm text-stone-500">
                 <span>Subtotal</span>
-                <span className="text-stone-900">
-                  ${subtotal.toFixed(2)}
-                </span>
+                <span className="text-stone-900">${subtotal.toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between text-sm text-stone-500">
@@ -229,7 +226,7 @@ export default function CheckoutPage() {
 
         <div className="mt-3 flex items-center gap-2 px-4 py-3 bg-amber-50 rounded-xl border border-amber-100">
           <svg
-            className="w-4 h-4 text-amber-600 flex-shrink-0"
+            className="w-4 h-4 text-amber-600 "
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

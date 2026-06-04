@@ -70,24 +70,7 @@ export default function OrderTrackingPage() {
       socket.off("statusUpdated", handleStatusUpdate);
     };
   }, [id]);
-  // useEffect(() => {
-  //   const fetchOrder = async () => {
-  //     if (!id) return;
 
-  //     const data = await getOrder(id);
-
-  //     setOrder(data);
-  //   };
-
-  //   fetchOrder();
-
-  //   const interval = setInterval(
-  //     fetchOrder,
-  //     5000
-  //   );
-
-  //   return () => clearInterval(interval);
-  // }, [id]);
 
   if (!order) {
     return (
