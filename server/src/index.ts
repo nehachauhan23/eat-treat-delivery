@@ -9,15 +9,13 @@ dotenv.config();
 const PORT = 5000;
 
 const isProd = process.env.NODE_ENV === "production";
-console.log("isprod : " , isProd);
+console.log("isprod : ", isProd);
 
 const CLIENT_URL = isProd
   ? process.env.CLIENT_URL_PROD
   : process.env.CLIENT_URL_DEV;
 
 console.log(" CLient url : ", CLIENT_URL);
-
-
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -39,10 +37,9 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(PORT, () => { 
+server.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
-  
-})
+});
 
 // app.listen(PORT, () => {
 //   console.log(`Server running on ${PORT}`);
